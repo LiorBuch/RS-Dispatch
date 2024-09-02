@@ -134,9 +134,17 @@ impl IDispatchW {
     pub fn get(&self, name: &str) -> anyhow::Result<RSVariant> {
         self.invoke(DISPATCH_PROPERTYGET, name, vec![])
     }
+    pub fn get_args(&self, name: &str,args:Vec<RSVariant>) -> anyhow::Result<RSVariant> {
+        self.invoke(DISPATCH_PROPERTYGET, name, args)
+    }
 
     pub fn get_idispatch(&self, name: &str) -> anyhow::Result<IDispatchW> {
         let result = self.get(name)?;
+        result.idispatch()
+    }
+
+    pub fn get_idispatch_args(&self, name: &str,args:Vec<RSVariant>) -> anyhow::Result<IDispatchW> {
+        let result = self.get_args(name,args)?;
         result.idispatch()
     }
 
@@ -197,14 +205,15 @@ impl RSCom {
             if res.is_err() {
                 return Err(ComError::NotInitialize());
             }
-            //let _com = DeferCoUninitialize;
+            let _com = DeferCoUninitialize;
             // Get CLSID of the com
+            
             let clsid = CLSIDFromProgID(PCWSTR::from_raw(HSTRING::from(prog_id).as_ptr()))
                 .map_err(|_| ComError::ComNotFound())?;
             println!("printing api id {:?}", clsid);
             // Create the instance of the COM
-            let _api_dispatch = CoCreateInstance(&clsid, None, CLSCTX_LOCAL_SERVER)
-                .map_err(|_| ComError::ComInstance())?;
+            let _api_dispatch = CoCreateInstance(&clsid, None, CLSCTX_INPROC_SERVER)
+                .map_err(|e| ComError::ComInstance(e.message()))?;
             thread::sleep(Duration::from_millis(1000));
             // Cast from IDispatch to the IDispatchWrapper
             let api_dispatch = IDispatchW(_api_dispatch);
@@ -243,6 +252,6 @@ impl RSCom {
 }
 impl Drop for RSCom {
     fn drop(&mut self) {
-        unsafe { CoUninitialize() }
+        unsafe { CoUninitialize()}
     }
 }
