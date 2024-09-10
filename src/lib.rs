@@ -3,7 +3,6 @@ pub mod com_errors;
 #[cfg(test)]
 mod tests {
     use std::{thread, time::Duration};
-    use windows::Win32::System::Com::CoUninitialize;
 
     use crate::idispatchw;
 
