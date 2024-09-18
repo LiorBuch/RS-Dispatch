@@ -188,14 +188,14 @@ impl Drop for DeferCoUninitialize {
 ///
 /// api:`IDIspatchW` -> The main interface for the Instrument COM.
 /// api_map:`HashMap` -> Can save [`IDispatch`] pointers for later usage, not a must.
-pub struct RSCom {
+pub struct RSComMap {
     pub api: IDispatchW,
     pub api_map: HashMap<String, IDispatchW>,
 }
 
-impl RSCom {
+impl RSComMap {
     /// Initializing the structure [`crate::com_module::InstrumentCom`] and append for each pointer its interface.
-    pub fn new(prog_id: &str) -> std::result::Result<RSCom, ComError> {
+    pub fn new(prog_id: &str) -> std::result::Result<RSComMap, ComError> {
         let mut args = env::args();
         let _ = args.next();
         unsafe {
@@ -212,13 +212,13 @@ impl RSCom {
                 .map_err(|_| ComError::ComNotFound())?;
             println!("printing api id {:?}", clsid);
             // Create the instance of the COM
-            let _api_dispatch = CoCreateInstance(&clsid, None, CLSCTX_INPROC_SERVER)
+            let _api_dispatch = CoCreateInstance(&clsid, None, CLSCTX_LOCAL_SERVER)
                 .map_err(|e| ComError::ComInstance(e.message()))?;
             thread::sleep(Duration::from_millis(1000));
             // Cast from IDispatch to the IDispatchWrapper
             let api_dispatch = IDispatchW(_api_dispatch);
             // Getter in the api for the Display IDispatch
-            let com = RSCom {
+            let com = RSComMap {
                 api: api_dispatch,
                 api_map: HashMap::new(),
             };
@@ -248,6 +248,51 @@ impl RSCom {
             ));
         }
         Ok(())
+    }
+}
+impl Drop for RSComMap {
+    fn drop(&mut self) {
+        unsafe { CoUninitialize()}
+    }
+}
+
+/// This structure hold the pointers for each key IDispatch interface
+///
+/// api:`IDIspatchW` -> The main interface for the Instrument COM.
+pub struct RSCom {
+    pub api: IDispatchW,
+}
+
+impl RSCom {
+    /// Initializing the structure [`crate::com_module::InstrumentCom`] and append for each pointer its interface.
+    pub fn new(prog_id: &str) -> std::result::Result<RSCom, ComError> {
+        let mut args = env::args();
+        let _ = args.next();
+        unsafe {
+            // API Data
+            // Init the thread
+            let res = CoInitializeEx(None, COINIT_APARTMENTTHREADED);
+            if res.is_err() {
+                return Err(ComError::NotInitialize());
+            }
+            let _com = DeferCoUninitialize;
+            // Get CLSID of the com
+            
+            let clsid = CLSIDFromProgID(PCWSTR::from_raw(HSTRING::from(prog_id).as_ptr()))
+                .map_err(|_| ComError::ComNotFound())?;
+            println!("printing api id {:?}", clsid);
+            // Create the instance of the COM
+            let _api_dispatch = CoCreateInstance(&clsid, None, CLSCTX_LOCAL_SERVER)
+                .map_err(|e| ComError::ComInstance(e.message()))?;
+            thread::sleep(Duration::from_millis(1000));
+            // Cast from IDispatch to the IDispatchWrapper
+            let api_dispatch = IDispatchW(_api_dispatch);
+            // Getter in the api for the Display IDispatch
+            let com = RSCom {
+                api: api_dispatch,
+            };
+            return Ok(com);
+        }
     }
 }
 impl Drop for RSCom {

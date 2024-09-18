@@ -8,7 +8,7 @@ mod tests {
 
     #[test]
     fn it_works_adv() {
-        let com = idispatchw::RSCom::new("WMPlayer.OCX");
+        let com = idispatchw::RSComMap::new("InstrumentV3.InstrumentAPI");
         match com {
             Ok(obj) => {
                 println!("Ok on Com!");
@@ -34,7 +34,7 @@ mod tests {
     
     #[test]
     fn it_works() {
-        let com = idispatchw::RSCom::new("WMPlayer.OCX");
+        let com = idispatchw::RSComMap::new("Excel.Application");
         match com {
             Ok(_) => {
                 println!("Ok on Com!");
