@@ -1,5 +1,7 @@
 RS Dispatch
 ======
+[![Com CI](https://github.com/LiorBuch/RS-Dispatch/actions/workflows/com.yml/badge.svg)](https://github.com/LiorBuch/RS-Dispatch/actions/workflows/com.yml)
+======
 
 Crate to provide a simplified method to use windows COM objects with IDispatch interface.
 
