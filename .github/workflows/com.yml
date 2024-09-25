@@ -1,4 +1,4 @@
-name: Rust
+name: Com CI
 
 on:
   push:
@@ -16,6 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install Dependencies
+      run: choco install -y microsoft-office
+
     - name: Build
       run: cargo build --verbose
     - name: Run tests
