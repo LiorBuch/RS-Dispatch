@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let com = RSCom::init("Excel.Application");
+        let com = RSCom::init("InternetExplorer.Application");
         match com {
             Ok(obj) => {
                 println!("Ok on Com!");

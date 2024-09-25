@@ -11,13 +11,11 @@ env:
 
 jobs:
   build-and-test:
-
+  timeout-minutes: 3
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install Dependencies
-      run: choco install -y microsoft-office
 
     - name: Build
       run: cargo build --verbose
