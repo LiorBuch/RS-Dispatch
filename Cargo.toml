@@ -2,7 +2,13 @@
 name = "rs-dispatch"
 version = "0.1.0"
 edition = "2021"
-
+authors = ["LiorBuch"]
+description = "a crate to wrap IDispatch and Com Objects for simplified use."
+repository = "https://github.com/LiorBuch/RS-Dispatch"
+license-file= "LICENSE.txt"
+license = "MIT"
+readme = "README.md"
+keywords = ["dll","com","windows","idispatch"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

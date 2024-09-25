@@ -21,9 +21,9 @@ int main() {
         return 1;
     }
     // Remote machine name and COM object details
-    const wchar_t* remote_machine = L"USC100CWIN10_64Bit";  // Change to your remote machine's name
-    const wchar_t* clsid_string = L"{00024500-0000-0000-C000-000000000046}";  // Replace with your CLSID
-    const wchar_t* iid_string = L"{00020400-0000-0000-C000-000000000046}";    // Replace with your IID
+    const wchar_t* remote_machine = L"name";  //machine's name
+    const wchar_t* clsid_string = L"{00024500-0000-0000-C000-000000000046}";  //CLSID
+    const wchar_t* iid_string = L"{00020400-0000-0000-C000-000000000046}";    //IID
 
     void* pInterface = nullptr;
     hr = create_object(remote_machine,clsid_string,iid_string,&pInterface);
