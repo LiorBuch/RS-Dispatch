@@ -1,21 +1,22 @@
-pub mod idispatchw;
-pub mod com_errors;
+pub mod com;
+pub mod common;
 #[cfg(test)]
 mod tests {
     use std::{thread, time::Duration};
-    use windows::Win32::System::Com::CoUninitialize;
 
-    use crate::idispatchw;
+    use crate::com::com_module::RSCom;
+
+
 
     #[test]
-    fn it_works_adv() {
-        let com = idispatchw::RSCom::new("WMPlayer.OCX");
+    fn it_works() {
+        let com = RSCom::init("InternetExplorer.Application");
         match com {
             Ok(obj) => {
                 println!("Ok on Com!");
-                let vis_r = obj.api.get("isRemote");
+                let vis_r = obj.api.get("Visible",vec![]);
                 match vis_r {
-                    Ok(o) => {
+                    Ok(_o) => {
                         thread::sleep(Duration::from_secs(1));
                         println!("Worked");
                         assert_eq!(1, 1);
@@ -25,21 +26,6 @@ mod tests {
                         assert_eq!(1, -2);
                     },
                 }
-            },
-            Err(e) => {
-                println!("{}", e);
-                assert_eq!(1, -1);
-            },
-        }
-    }
-    
-    #[test]
-    fn it_works() {
-        let com = idispatchw::RSCom::new("WMPlayer.OCX");
-        match com {
-            Ok(_) => {
-                println!("Ok on Com!");
-                assert_eq!(1, 1);
             },
             Err(e) => {
                 println!("{}", e);
